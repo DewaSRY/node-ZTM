@@ -2,6 +2,7 @@ const { parse } = require("csv-parse");
 const fs = require("fs");
 
 const confirmPlaned = [];
+
 function ishabitablePlanet(planet) {
   return (
     planet["koi_disposition"] === "CONFIRMED" &&
