@@ -1,0 +1,27 @@
+{
+  "name": "ztm-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DewaSRY/node-ZTM.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DewaSRY/node-ZTM/issues"
+  },
+  "homepage": "https://github.com/DewaSRY/node-ZTM#readme",
+  "dependencies": {
+    "csv-parse": "^5.3.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
