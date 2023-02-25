@@ -1,35 +1,26 @@
-const { parse } = require("csv-parse");
-const fs = require("fs");
+const express = require("express");
+const hbs = require("hbs"); //it's just like "ejs" use to render template
+const path = require("path");
+const friendRouter = require("./router/friends.router");
+const messagerouter = require("./router/message.router");
+const app = express();
 
-const confirmPlaned = [];
-
-function ishabitablePlanet(planet) {
-  return (
-    planet["koi_disposition"] === "CONFIRMED" &&
-    planet["koi_insol"] < 1.11 &&
-    planet["koi_prad"] < 1.6
-  );
-}
-fs.createReadStream("kepler_data.csv")
-  .pipe(
-    parse({
-      comment: "#",
-      columns: true,
-    })
-  )
-  .on("data", (data) => {
-    if (ishabitablePlanet(data)) {
-      confirmPlaned.push(data);
-    }
-  })
-  .on("error", (err) => {
-    console.log(err);
-  })
-  .on("end", () => {
-    console.log(confirmPlaned);
-    console.log(confirmPlaned.length, "was good enought");
-    for (planet of confirmPlaned) {
-      console.log(planet["kepler_name"]);
-    }
-    console.log("done");
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views")); //its how you render your template
+app.use("/static", express.static(path.join(__dirname, "public"))); //it's where you save your static file
+app.use(express.json());
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.baseUrl} ${req.url} your ip is`, req.ip);
+  next();
+});
+app.get("/", (req, res) => {
+  res.render("index", {
+    title: "my Friends from everest",
   });
+});
+app.use("/friends", friendRouter);
+app.use("/message", messagerouter);
+
+app.listen(3000, () => {
+  console.log("port run att 3000");
+});
