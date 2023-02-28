@@ -1,5 +1,7 @@
+const mongoLaunches = require("./Lounch.mongo");
+const planets = require("./planets.mongo");
 const launches = new Map();
-let letLastFlightNumber = 100;
+let LATES_LAST_NUMBER = 100;
 const launch = {
   flightNumber: 100,
   mission: "kepler Exploration X",
@@ -10,32 +12,65 @@ const launch = {
   upcoming: true,
   success: true,
 };
-launches.set(launch.flightNumber, launch);
+saveLaunce(launch);
+async function arrayAllLaunches() {
+  return await mongoLaunches.find({});
+}
 
-function arrayAllLaunches() {
-  return Array.from(launches.values());
+async function addNewLaunch(launch) {
+  const newFlightNumber = (await getLatesFlightNumber()) + 1;
+  const newLaunch = Object.assign(launch, {
+    flightNumber: newFlightNumber,
+    customer: ["NASA", "ZTM"],
+    upcoming: true,
+    success: true,
+  });
+  await saveLaunce(newLaunch);
 }
-function addNewLaunch(launch) {
-  letLastFlightNumber++;
-  launches.set(
-    letLastFlightNumber,
-    Object.assign(launch, {
-      flightNumber: letLastFlightNumber,
-      customer: ["NASA", "ZTM"],
-      upcoming: true,
-      success: true,
-    })
+async function saveLaunce(data) {
+  const planet = planets.find({
+    kepler_name: data.target,
+  });
+  if (!planet) {
+    throw new Error("No Maching Planet was found");
+  } else {
+    await mongoLaunches.findOneAndUpdate(
+      {
+        flightNumber: data.flightNumber,
+      },
+      data,
+      {
+        upsert: true,
+      }
+    );
+  }
+}
+async function getLatesFlightNumber() {
+  const latesLaucnch = await mongoLaunches.findOne().sort("-flightNumber");
+  if (!latesLaucnch) {
+    return LATES_LAST_NUMBER;
+  }
+  return latesLaucnch.flightNumber;
+}
+
+async function existsLaunchWithId(launchId) {
+  return await mongoLaunches.findOne({
+    flightNumber: launchId,
+  });
+}
+async function abortLaunchById(launchId) {
+  const abort = await mongoLaunches.updateOne(
+    {
+      flightNumber: launchId,
+    },
+    {
+      upcoming: false,
+      success: false,
+    }
   );
+  return abort.modifiedCount === 1;
 }
-function existsLaunchWithId(launchId) {
-  return launches.has(launchId);
-}
-function abortLaunchById(launchId) {
-  const abort = launches.get(launchId);
-  abort.upcoming = false;
-  abort.success = false;
-  return abort;
-}
+
 module.exports = {
   arrayAllLaunches,
   addNewLaunch,

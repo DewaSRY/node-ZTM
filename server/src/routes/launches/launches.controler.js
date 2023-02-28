@@ -5,17 +5,16 @@ const {
   abortLaunchById,
 } = require("../../models/Lounch.model");
 
-function getAllLaunches(req, res) {
-  return res.status(200).json(arrayAllLaunches());
+async function getAllLaunches(req, res) {
+  return res.status(200).json(await arrayAllLaunches());
 }
 
-function postAddnewLaunch(req, res) {
+async function postAddnewLaunch(req, res) {
   const launch = req.body;
   if (!launch.mission || !launch.rocket || !launch.target || !launch.launchDate)
     return res.status(400).json({
       error: "Missing required launch property",
     });
-
   launch.launchDate = new Date(launch.launchDate);
   if (isNaN(launch.launchDate)) {
     // || launch.launchDate < new Date(Date.now()) add it and get frustration
@@ -23,19 +22,25 @@ function postAddnewLaunch(req, res) {
       error: "Invalid launch date",
     });
   }
-
-  addNewLaunch(launch);
+  await addNewLaunch(launch);
   return res.status(201).json(launch);
 }
-function deleteLaunch(req, res) {
+async function deleteLaunch(req, res) {
   const launchId = Number(req.params.id);
-  if (!existsLaunchWithId(launchId)) {
+  if (!(await existsLaunchWithId(launchId))) {
     return res.status(404).json({
       error: "Launch not Found",
     });
   }
-  const aborted = abortLaunchById(launchId);
-  return res.status(200).json(aborted);
+  const aborted = await abortLaunchById(launchId);
+  if (!aborted) {
+    return res.status(400).json({
+      error: "Failed to delete",
+    });
+  }
+  return res.status(200).json({
+    ok: true,
+  });
 }
 
 module.exports = {

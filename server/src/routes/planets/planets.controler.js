@@ -1,5 +1,5 @@
 const { arrayAllPlanets } = require("../../models/planets.model");
-function getAllPlanets(req, res) {
-  return res.status(200).json(arrayAllPlanets());
+async function getAllPlanets(req, res) {
+  return res.status(200).json(await arrayAllPlanets());
 }
 module.exports = getAllPlanets;
