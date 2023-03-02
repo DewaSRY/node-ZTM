@@ -1,0 +1,21 @@
+name: NODE ZTM
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+job:
+  build:
+    env:
+      CI: true
+    runs-on: ubutu-latest
+    steps:
+      - uses: actions/checkout@2
+      - name: Use node.js vesion 16
+        uses: actions/setup-node@2
+        with:
+          node-version:'16'
+      - run: npm install
+      - run: npm run build --prefix client
+  deploy:
+    needs: build

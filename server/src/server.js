@@ -1,9 +1,10 @@
 const http = require("http");
+require("dotenv").config();
 const app = require("./app");
 const { loadPlanetData } = require("./models/planets.model");
 const { mongoConnect } = require("./utils/mongoDB");
 const { loadLaunchData } = require("./models/Lounch.model");
-const PORT = process.env.PORT || 8000;
+const PORT = 8000;
 
 const server = http.createServer(app);
 

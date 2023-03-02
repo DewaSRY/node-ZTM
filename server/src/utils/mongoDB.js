@@ -2,7 +2,8 @@ require("dotenv").config(); // if not asing will return "undefined"
 
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
-const YOUR_MONGODB_URI = "mongodb://localhost:27017/Nasa-Api"; //
+const YOUR_MONGODB_URI =
+  process.env.MONGO_SERVER || "mongodb://localhost:27017/Nasa-Api"; //
 
 async function mongoConnect() {
   return await mongoose
